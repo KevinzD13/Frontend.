@@ -1,0 +1,344 @@
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+            <title>Administración de Vehículos</title>
+        </head>
+        <style>
+            
+            body {
+                background-color: #19123B;
+                color: #fff;
+            }
+            
+            h4 {
+                text-align: center;
+                color: #fff;
+                margin-bottom: 20px;
+            }
+
+            .container {
+                margin-top: 20px;
+            }
+
+            .form-control {
+                background: #212042;
+                border: 1px solid #57557A;
+                color: #fff;
+                font-size: 14px;
+            }
+
+            .form-control::placeholder {
+                color: #57557A;
+                font-weight: 600;
+            }
+
+            .btn-primary, .btn-success, .btn-danger, .btn-secondary {
+                font-weight: bold;
+                border-radius: 50px;
+            }
+
+            .btn-primary {
+                background: linear-gradient(135deg, rgba(176, 106, 252, 1) 39%, rgba(116, 17, 255, 1) 101%);
+                color: #fff;
+            }
+
+            .btn-primary:hover {
+                background: linear-gradient(135deg, rgba(116, 17, 255, 1) 39%, rgba(176, 106, 252, 1) 101%);
+            }
+
+            .btn-success {
+                background-color: #28a745;
+            }
+
+            .btn-danger {
+                background-color: #dc3545;
+            }
+
+            .btn-secondary {
+                background-color: #6c757d;
+            }
+
+            .table th, .table td {
+                text-align: center;
+            }
+
+            .table {
+                background-color: #212042;
+                color: #fff;
+            }
+
+            .table th {
+                background-color: #57557A;
+            }
+        </style>
+        <body>
+            <div class="container mt-4">
+                <form id="myForm">
+                    <h4>Administración de Vehículos</h4>
+                    <div class="mb-3">
+                        <label for="tipo" class="form-label">Tipo de Vehículo</label>
+                        <input type="text" class="form-control" id="tipo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="total" class="form-label">Capacidad Total</label>
+                        <input type="text" class="form-control" id="total" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tarifa" class="form-label">Tarifa</label>
+                        <input type="text" class="form-control" id="tarifa" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </form>
+            </div>
+
+            <div class="container mt-5">
+                <h4>Lista de Vehículos</h4>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Tipo de Vehículo</th>
+                            <th>Capacidad Total</th>
+                            <th>Espacios Ocupados</th>
+                            <th>Espacios Disponibles</th>
+                            <th>Tarifa</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data"></tbody>
+                </table>
+            </div>
+
+            <div class="container mt-5">
+                <h4>Lista de tickets</h4>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Codigo</th>
+                            <th>Tipo de Vehículo</th>
+                            <th>Fecha de ingreso</th>
+                            <th>Fecha de salida</th>
+                            <th>Tarifa</th>
+                            <th>Costo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ticketData"></tbody>
+                </table>
+            
+            <footer>
+                <div class="container">
+            <a href="login.html"class= "btn btn-light">Volver al inicio</a>
+                </div>
+            </footer>
+            </div>
+
+            <div class="container mt-5" id="editForm" style="display: none;">
+                <h4>Editar Vehículo</h4>
+                <form id="updateForm">
+                    <input type="hidden" id="updateId">
+                    <div class="mb-3">
+                        <label for="updateTipo" class="form-label">Tipo de Vehículo</label>
+                        <input type="text" class="form-control" id="updateTipo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="updateTotal" class="form-label">Capacidad Total</label>
+                        <input type="text" class="form-control" id="updateTotal" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="updateTarifa" class="form-label">Tarifa</label>
+                        <input type="text" class="form-control" id="updateTarifa" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+                    <button type="button" class="btn btn-secondary" onclick="cancelarEdicion()">Cancelar</button>
+                
+                </form>
+            </div>
+
+            <script>
+        const url = "https://localhost:7071/api/Vehiculo";
+
+        const obtenerDatos = async () => {
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                mostrarData(data);
+            } catch (error) {
+                console.error('Error al obtener los datos:', error);
+            }
+        };
+
+        
+
+        const mostrarData = (data) => {
+            let body = ''; 
+            data.forEach(vehiculo => {
+                console.log(vehiculo); 
+                body += ` <tr>
+                        <td>${vehiculo.id}</td>
+                        <td>${vehiculo.tipo}</td>
+                        <td>${vehiculo.capacidadTotal}</td>
+                        <td>${vehiculo.espaciosOcupados}</td>
+                        <td>${vehiculo.espaciosDisponibles}</td>
+                        <td>${vehiculo.tarifa}</td>
+                        <td>
+                            <button class="btn btn-success" onclick="prepararEdicion(${vehiculo.id || 0}, '${vehiculo.tipo || ''}', ${vehiculo.capacidadTotal || 0}, ${vehiculo.tarifa || 0})">Editar</button>
+                            <button class="btn btn-danger" onclick="eliminarVehiculo(${vehiculo.id})">Eliminar</button>
+                        </td> 
+                    </tr>`;
+                
+            });
+            document.getElementById('data').innerHTML = body;
+        };
+            document.addEventListener('DOMContentLoaded', obtenerDatos);
+
+            const url2 = "https://localhost:7071/api/Ticket";
+
+    const obtenerDatos2 = async () => {
+        try {
+            const response = await fetch(url2);
+            const data = await response.json();
+            mostrarData2(data);
+        } catch (error) {
+            console.error("Error al obtener los tickets:", error);
+        }
+    };
+
+    const mostrarData2 = (data) => {
+        let body = ''; 
+        data.forEach(ticket => {
+            body += ` 
+            <tr>
+                <td>${ticket.id_Vehiculo}</td>
+                <td>${ticket.tipo}</td>
+                <td>${ticket.fechaIngreso}</td>
+                <td>${ticket.fechaSalida ? ticket.fechaSalida : "Sigue en el estacionamiento"}</td>
+                <td>${ticket.tarifa}</td>
+                <td>${ticket.costo === null || ticket.costo === undefined ?"Necesitas salir primero" : ticket.costo === 0 ? "Costo no aplicable" : ticket.costo}</td>
+                <td>
+                <button class="btn btn-danger" onclick="eliminarTicket(${ticket.id_Vehiculo})">Eliminar</button>
+                </td>
+            </tr>`;
+        });
+        document.getElementById('ticketData').innerHTML = body;
+    };
+
+
+            document.addEventListener('DOMContentLoaded', () => {
+                obtenerDatos();  
+                obtenerDatos2(); 
+            });
+
+
+                    document.getElementById('myForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const vehiculo = {
+                    tipo: document.getElementById('tipo').value,
+                    capacidadTotal: parseInt(document.getElementById('total').value),
+                    tarifa: parseFloat(document.getElementById('tarifa').value)
+                };
+
+                fetch(url, {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(vehiculo)
+                })
+                    .then(response => response.text())
+                    .then(text => {
+                        alert(data.message || "Vehiculo agregado correctamente.");
+                        location.reload();
+                    })
+                    .catch(error => console.error("Error", error));
+            });
+
+
+                const prepararEdicion = (id, tipo, capacidadTotal, tarifa) => {
+                document.getElementById('editForm').style.display = 'block';
+                document.getElementById('updateId').value = id;
+                document.getElementById('updateTipo').value = tipo;
+                document.getElementById('updateTotal').value = capacidadTotal;
+                document.getElementById('updateTarifa').value = tarifa;
+            };
+
+            document.getElementById('updateForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const id = parseInt(document.getElementById('updateId').value); 
+        const vehiculo = {
+            id: id, 
+            tipo: document.getElementById('updateTipo').value,
+            capacidadTotal: parseInt(document.getElementById('updateTotal').value),
+            tarifa: parseFloat(document.getElementById('updateTarifa').value)
+        };
+
+        fetch(`${url}/${id}`, {
+            method: "PUT",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(vehiculo)
+        })
+            .then(response => response.text())
+            .then(text => {
+                alert(text);
+                document.getElementById('editForm').style.display = "none";
+                obtenerDatos();
+            })
+            .catch(error => console.error('Error:', error));
+    });
+
+        const cancelarEdicion = () => {
+        document.getElementById('editForm').style.display = 'none';
+        document.getElementById('updateTipo').value = '';
+        document.getElementById('updateTotal').value = '';
+        document.getElementById('updateTarifa').value = '';
+    };
+
+
+            const eliminarVehiculo = (id) => {
+                if(!confirm("Estas seguro de que deseas elmininar este vehiculo")){
+                    return;
+                }
+
+                fetch(`https://localhost:7071/api/Vehiculo/${id}`,{
+                    method: "DELETE",
+                    headers: {'Content-Type': 'application/json'}
+                })
+                .then(response => {
+                    if(response.ok){
+                        alert("Vehiculo eliminado correctamente");
+                        obtenerDatos();
+                    }else{
+                        return repsonse.text().then(text => {throw new Error(text); })
+                    }
+                })
+                .catch(error => console.error("Error al eliminar", error))
+            };
+
+
+
+            const eliminarTicket = (id) => {
+                if(!confirm("Estas seguro de que deseas elmininar este vehiculo")){
+                    return;
+                }
+
+                fetch(`https://localhost:7071/api/Ticket/${id}`,{
+                    method: "DELETE",
+                    headers: {'Content-Type': 'application/json'}
+                })
+                .then(response => {
+                    if(response.ok){
+                        alert("Ticket eliminado correctamente");
+                        location.reload();
+                    }else{
+                        return repsonse.text().then(text => {throw new Error(text); })
+                    }
+                })
+                .catch(error => console.error("Error al eliminar", error))
+            };
+            </script>
+        </body>
+        </html>
