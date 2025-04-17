@@ -127,7 +127,7 @@
                 <label for="updateRol" class="form-label">Rol de Usuario</label>
                 <input type="text" class="form-control" id="updateRol" required>
             </div>
-            <button type="submit" class="btn btn-success">Guardar Cambios</button>
+            <button type="submit" id="guardar-cambios" class="btn btn-success">Guardar Cambios</button>
             <button type="button" class="btn btn-secondary" onclick="cancelarEdicion()">Cancelar</button>
         </form>
     </div>
@@ -155,8 +155,8 @@
                         <td>${usuario.contra_usuario}</td>
                         <td>${usuario.rol_usuario}</td>
                         <td>
-                            <button class="btn btn-success" onclick="prepararEdicion(${usuario.id}, '${usuario.nombre_usuario}', '${usuario.contra_usuario}', '${usuario.rol_usuario}')">Editar</button>
-                            <button class="btn btn-danger" onclick="eliminarUsuario(${usuario.id})">Eliminar</button>
+                            <button class="btn btn-success" id="btn-cambios" onclick="prepararEdicion(${usuario.id}, '${usuario.nombre_usuario}', '${usuario.contra_usuario}', '${usuario.rol_usuario}')">Editar</button>
+                            <button class="btn btn-danger" id="btn-eliminar " onclick="eliminarUsuario(${usuario.id})">Eliminar</button>
                         </td>
                     </tr>`;
             });
